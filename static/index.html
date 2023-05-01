@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Image Upload and Detection</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            margin: auto;
+            width: 50%;
+            border: 3px solid #f1f1f1;
+            padding: 10px;
+        }
+        #fileInput {
+            border: none;
+            padding: 12px;
+            background-color: #f2f2f2;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 80%;
+            margin-bottom: 16px;
+        }
+        #uploadBtn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+        #imageDisplay {
+            max-width: 100%;
+            height: auto;
+        }
+        #resultDisplay {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#uploadBtn').click(function(){
+                // get the file object
+                var file = $('#fileInput')[0].files[0];
+                // create a FileReader
+                var reader = new FileReader();
+                // base64 encode the file
+                reader.onloadend = function(){
+                    var base64 = reader.result;
+                    // post content to API
+                    $.ajax({
+                        url: "http://localhost:8080/imagedetect/",
+                        type: "POST",
+                        data: JSON.stringify({"image": base64}),
+                        contentType: "application/json; charset=utf-8",
+                        success: function(response){
+                            //delete previous image
+                            $("img").remove();
+                            // bsae64 to image
+                            var img = document.createElement('img');
+                            img.src = "data:image/jpeg;base64," + response;
+                            img.id = "imageDisplay";
+                            // clear previous result display
+                            $('#resultDisplay').empty();
+                            // append image to container
+                            $('#imageContainer').append(img);
+                            // display results
+                            // $('#resultDisplay').append("<p><strong>Detected objects:</strong></p>");
+                            $('#resultDisplay').append();
+                            var result = JSON.parse(response);
+                            var objects = result.objects;
+                            for (var i=0; i<objects.length; i++){
+                                var object = objects[i];
+                                $('#resultDisplay').append("<p>" + object.class + " (" + object.confidence + ")</p>");
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            alert('Error: ' + textStatus + ' ' + errorThrown);
+                        }
+                    });
+                }
+                // read the file
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Object Detection from Image</h1>
+        <p>Select an image and click the upload button to detect objects in the image.</p>
+        <input type="file" id="fileInput"  ><br><br>
+        <button id="uploadBtn">Upload</button><br><br>
+        <div id="imageContainer"></div>
+        <div id="resultDisplay"></div>
+    </div>
+</body>
+</html>

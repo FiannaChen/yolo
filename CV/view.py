@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_protect
 # create a restful api for the image detection
 @csrf_protect
 @csrf_exempt
+
 def detectImage(request):
     # create a response map for the result
 
@@ -46,7 +47,8 @@ def detectImage(request):
         # save the image
         with open(image_name, 'wb') as f:
             f.write(image)
-
+        # use BytesIO instead of saving the image to disk
+        # image_data = BytesIO(image)
         result = detect.run(image_name)
         if result != None:
             if result['status'] == True:

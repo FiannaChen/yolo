@@ -35,7 +35,6 @@ import os
 import platform
 import sys
 from pathlib import Path
-
 import torch
 import torch.backends.cudnn as cudnn
 
@@ -61,7 +60,7 @@ def run(
         # view_img=False,  # show results
         # save_txt=False,  # save results to *.txt
         view_img=False,  # show results
-        save_txt=False,
+        save_txt=False,  # save results to *.txt
         save_conf=False,  # save confidences in --save-txt labels
         save_crop=False,  # save cropped prediction boxes
         nosave=False,  # do not save images/videos
@@ -80,11 +79,10 @@ def run(
         dnn=False,  # use OpenCV DNN for ONNX inference
 ):
 
-    # source=source+imageName;
-
     source = str(source)
-
     source = source + imageName
+
+
    # source=source+imageUrl;
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -171,6 +169,7 @@ def run(
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
                         with open(f'{txt_path}.txt', 'a') as f:
+                          
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or save_crop or view_img:  # Add bbox to image
