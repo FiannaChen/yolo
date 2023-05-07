@@ -49,6 +49,8 @@ def detectImage(request):
             f.write(image)
         # use BytesIO instead of saving the image to disk
         # image_data = BytesIO(image)
+
+        
         result = detect.run(image_name)
         if result != None:
             if result['status'] == True:
@@ -62,6 +64,7 @@ def detectImage(request):
                     image = f.read()
                 # encode the image
                 image = base64.b64encode(image)
+                image = str(image, encoding='utf-8')
                 # delete the image
                 os.remove(image_path)
                 # get the front path of the imagepath
@@ -73,7 +76,21 @@ def detectImage(request):
                 # delete the original image
                 os.remove(image_name)
                 # return the result
-                return HttpResponse(image)
+                #生成response，json字符串
+
+
+                # 创建JSON对象
+                response = {
+                    "status": True,
+                    "image": image,
+                    "resultStr": result['resultStr']
+                }
+
+                # 将JSON对象转换为JSON字符串
+                jsonstr = json.dumps(response)
+
+                #返回json字符串
+                return HttpResponse(jsonstr)
 
             else:
                 return HttpResponse(result['false'])

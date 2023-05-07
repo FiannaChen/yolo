@@ -178,7 +178,10 @@ def run(
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-
+               
+                    print(f'Detect object: {names[c]} with confidance score:{conf:.2f}')
+           
+           
             # Stream results
             im0 = annotator.result()
             if view_img:
@@ -209,7 +212,17 @@ def run(
                     vid_writer[i].write(im0)
 
         # Print time (inference-only)
-        LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
+        resultInfo=f'{s}Done. ({t3 - t2:.3f}s)'
+
+        LOGGER.info(resultInfo)
+        const="The size of the image that you uploaded is "
+        resultInfo=resultInfo.split(":")[1]
+        print(resultInfo)
+        resultinfo2=resultInfo.split(" ")
+        #将resultinfo2中下标大于1的元素拼接成字符串，以空格分割
+        detectresult=" ".join(resultinfo2[2:])
+        resultInfo=const+resultinfo2[1]+" and exist "+detectresult
+        
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
@@ -217,7 +230,7 @@ def run(
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
-        response = {'status': True, 'dataDir': str(save_dir)}
+        response = {'status': True, 'dataDir': str(save_dir),'resultStr':resultInfo}
         return response
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)

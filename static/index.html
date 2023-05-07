@@ -69,25 +69,30 @@
                             $("img").remove();
                             // bsae64 to image
                             var img = document.createElement('img');
-                            img.src = "data:image/jpeg;base64," + response;
+                            //解析response json字符串，获取status，image，和resultStr
+                            var result = JSON.parse(response);
+                            var status = result.status;
+                            var image = result.image;
+                            var resultStr = result.resultStr;
+                            img.src = "data:image/jpeg;base64," + image;
                             img.id = "imageDisplay";
                             // clear previous result display
                             $('#resultDisplay').empty();
                             // append image to container
                             $('#imageContainer').append(img);
-                            // display results
-                            // $('#resultDisplay').append("<p><strong>Detected objects:</strong></p>");
-                            $('#resultDisplay').append();
-                            var result = JSON.parse(response);
-                            var objects = result.objects;
-                            for (var i=0; i<objects.length; i++){
-                                var object = objects[i];
-                                $('#resultDisplay').append("<p>" + object.class + " (" + object.confidence + ")</p>");
+            
+                            $('#resultDisplay').empty();
+                           
+                            if (resultStr !=null) {
+                            $('#resultDisplay').append("<p><strong>Detected results:"+resultStr+"</strong></p>");
+                 
+                                
+                        
+                            } else {
+                            $('#resultDisplay').append("<p>No objects detected.</p>");
                             }
+
                         },
-                        error: function(jqXHR, textStatus, errorThrown){
-                            alert('Error: ' + textStatus + ' ' + errorThrown);
-                        }
                     });
                 }
                 // read the file
