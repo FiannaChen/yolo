@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-# python3 manage.py runserver 0.0.0.0:8000
+# source venv/bin/activate
+# deactivate
+# python3 manage.py runserver localhost:8000
 """Django's command-line utility for administrative tasks."""
 import os
 import sys

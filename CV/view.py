@@ -11,9 +11,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 
 # create a restful api for the image detection
+
+
 @csrf_protect
 @csrf_exempt
-
 def detectImage(request):
     # create a response map for the result
 
@@ -24,7 +25,7 @@ def detectImage(request):
             received_json_data = json.loads(request.body)
         except Exception as e:
             return HttpResponse('the request body is empty')
-        
+
         # judge the image is empty
         try:
             received_json_data['image'] == None
@@ -50,15 +51,17 @@ def detectImage(request):
         # use BytesIO instead of saving the image to disk
         # image_data = BytesIO(image)
 
-        
         result = detect.run(image_name)
         if result != None:
             if result['status'] == True:
-
                 # get the host path
                 host_path = os.path.abspath(os.path.dirname(__file__))
+                print(host_path)
                 host_path = host_path.split('CV')[0]
-                image_path = host_path + 'CV/' + result['dataDir'] + '/' + image_name
+                print("---------------")
+                print(host_path)
+                print("---------------")
+                image_path = host_path + '/' + result['dataDir'] + '/' + image_name
                 # read the image
                 with open(image_path, 'rb') as f:
                     image = f.read()
@@ -71,26 +74,18 @@ def detectImage(request):
                 image_path = image_path.split(image_name)[0]
                 # delete directory
                 os.removedirs(image_path)
-
                 print(image_path)
                 # delete the original image
                 os.remove(image_name)
                 # return the result
-                #生成response，json字符串
-
-
-                # 创建JSON对象
                 response = {
                     "status": True,
                     "image": image,
                     "resultStr": result['resultStr']
                 }
-
-                # 将JSON对象转换为JSON字符串
+                # convert the response to json
                 jsonstr = json.dumps(response)
-
-                #返回json字符串
+                # return the json
                 return HttpResponse(jsonstr)
-
             else:
                 return HttpResponse(result['false'])

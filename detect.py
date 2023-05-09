@@ -82,7 +82,6 @@ def run(
     source = str(source)
     source = source + imageName
 
-
    # source=source+imageUrl;
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -169,7 +168,7 @@ def run(
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
                         with open(f'{txt_path}.txt', 'a') as f:
-                          
+
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or save_crop or view_img:  # Add bbox to image
@@ -178,10 +177,9 @@ def run(
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-               
+
                     print(f'Detect object: {names[c]} with confidance score:{conf:.2f}')
-           
-           
+
             # Stream results
             im0 = annotator.result()
             if view_img:
@@ -212,17 +210,16 @@ def run(
                     vid_writer[i].write(im0)
 
         # Print time (inference-only)
-        resultInfo=f'{s}Done. ({t3 - t2:.3f}s)'
+        resultInfo = f'{s}Done. ({t3 - t2:.3f}s)'
 
         LOGGER.info(resultInfo)
-        const="The size of the image that you uploaded is "
-        resultInfo=resultInfo.split(":")[1]
+        const = "The size of the image that you uploaded is "
+        resultInfo = resultInfo.split(":")[1]
         print(resultInfo)
-        resultinfo2=resultInfo.split(" ")
-        #将resultinfo2中下标大于1的元素拼接成字符串，以空格分割
-        detectresult=" ".join(resultinfo2[2:])
-        resultInfo=const+resultinfo2[1]+" and exist "+detectresult
-        
+        resultinfo2 = resultInfo.split(" ")
+        # 将resultinfo2中下标大于1的元素拼接成字符串，以空格分割
+        detectresult = " ".join(resultinfo2[2:])
+        resultInfo = const + resultinfo2[1] + " and exist " + detectresult
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
@@ -230,7 +227,7 @@ def run(
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
-        response = {'status': True, 'dataDir': str(save_dir),'resultStr':resultInfo}
+        response = {'status': True, 'dataDir': str(save_dir), 'resultStr': resultInfo}
         return response
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)

@@ -60,7 +60,7 @@
                     var base64 = reader.result;
                     // post content to API
                     $.ajax({
-                        url: "http://localhost:8080/imagedetect/",
+                        url: "http://localhost:8000/imagedetect/",
                         type: "POST",
                         data: JSON.stringify({"image": base64}),
                         contentType: "application/json; charset=utf-8",
